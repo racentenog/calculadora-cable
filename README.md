@@ -31,3 +31,10 @@ B) Calcula la capacidad de corriente tomando en cuenta:
 ```bash
 git clone https://github.com/racentenog/calculadora-cable.git
 cd calculadora-cable
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+http://localhost:5000
+
+
