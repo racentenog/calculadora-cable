@@ -1,1 +1,168 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Cables de Cobre</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 150px;
+        }
+
+        h2 {
+            color: #dce2bc;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        select, input, button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1rem;
+        }
+
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 0.7rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .resultado {
+            margin-top: 20px;
+            background-color: #eaf7fa; /* Light blue */
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .error {
+            color: red; /* Red for error messages */
+        }
+     body {
+            background-color: #0000cc; /* Azul eléctrico */
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        form {
+            margin-top: 20px;
+        }
+        select, input[type="text"], button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+        }
+        button {
+            background-color: #ffaa00;
+            color: #000;
+            cursor: pointer;
+        }
+        .logo-container {
+            margin-top: 20px;
+            animation: pulse 3s infinite ease-in-out;
+        }
+        .logo {
+            width: 150px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 16px; 
+            color: #91f3f7;
+        }
+    </style>
+</head>
+<body>
+     <div class="logo-container">
+        <img src="/static/LOGO2.png" alt="Logo eléctrico" class="logo">
+    </div>
+<h2>Consulta de Cables de Cobre</h2>
+<p>Seleccione el modo de consulta:</p>
+<select id="modo">
+    <option value="diametro">Por diámetro (mm)</option>
+    <option value="awg">Por AWG</option>
+</select>
+<br>
+<input id="valor" placeholder="INGRESE EL VALOR..." />
+<button onclick="consultar()">Consultar</button>
+<div id="result"></div>
+<div id="error"></div>
+<script>
+function consultar() {
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('error').innerHTML = '';
+    let modo = document.getElementById('modo').value;
+    let valor = document.getElementById('valor').value.trim();
+    if (!valor) {
+        document.getElementById('error').innerHTML = "Por favor ingrese un valor.";
+        return;
+    }
+    fetch('/api/consulta', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({modo: modo, valor: valor})
+    })
+    .then(res => res.json().then(j => ({ok: res.ok, json: j})))
+    .then(res => {
+        if (res.ok) {
+            let d = res.json;
+            document.getElementById('result').innerHTML =
+                (d.mensaje ? d.mensaje + "<br>" : "") +
+                "<span class='dato'>AWG:</span> " + d.AWG + "<br>" +
+                "<span class='dato'>I60:</span> " + d.I60 + " A<br>" +
+                "<span class='dato'>I75:</span> " + d.I75 + " A<br>" +
+                "<span class='dato'>I90:</span> " + d.I90 + " A";
+        } else {
+            document.getElementById('error').innerHTML = res.json.error || "Error desconocido";
+        }
+    })
+    .catch(() => {
+        document.getElementById('error').innerHTML = "No se pudo conectar al servidor.";
+    });
+}
+</script>
+<footer>
+        <p>© Ramón Centeno 🛠️ </p>
+        <p>Libre uso · 🚫 Sin reventa</p>
+</footer>
+</body>
+</html>
